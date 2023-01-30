@@ -1,0 +1,14 @@
+---
+- name: Copy site config
+  template:
+    src: 'default_site.j2'
+    dest: '/etc/nginx/sites-available/default'
+  become: yes
+
+- name: Copy index.php
+  copy:
+    src: 'index.php'
+    dest: '{{ document_root }}/index.php'
+  become: yes
+
+

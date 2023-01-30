@@ -1,0 +1,6 @@
+---
+# Install php-fpm
+- include_tasks: install_php.yml
+
+# Configure php
+- include_tasks: configure_php.yml

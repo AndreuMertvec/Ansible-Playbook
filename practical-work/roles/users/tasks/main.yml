@@ -1,0 +1,6 @@
+---
+# Create user
+- include_tasks: create_user.yml
+
+# Add ssh-key
+- include_tasks: add_ssh_key.yml

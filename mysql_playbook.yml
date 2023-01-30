@@ -1,0 +1,28 @@
+---
+- hosts: localhost
+  gather_facts: yes
+  tasks:
+    #Install packages
+  - name: Install packages
+    apt:
+      pkg:
+        - default-libmysqlclient-dev 
+        - build-essential
+        - mysql-server
+        - mysql-client
+    become: yes
+ 
+  # Restart mysql 
+  - name: restart MySQL
+    service:
+      name: mysql
+      state: restarted
+    become: yes
+
+  # Set root password
+  - name: Set mysql root password
+    mysql_user:
+      name: root
+      host: localhost
+      password: "MyRootPassword"
+    become: yes

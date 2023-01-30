@@ -1,0 +1,11 @@
+---
+- hosts: test1
+  roles:
+    - role: 'roles/users'
+    - role: 'roles/nginx'
+
+- hosts: test2
+  roles:
+    - role: 'roles/users'
+    - role: 'roles/php'
+

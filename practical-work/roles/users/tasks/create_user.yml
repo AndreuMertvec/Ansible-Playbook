@@ -1,0 +1,6 @@
+---
+- name: Create Users
+  user:
+    name: user
+    shell: /bin/bash
+  become: yes

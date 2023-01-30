@@ -1,0 +1,147 @@
+---
+- hosts: app
+  gather_facts: yes
+  tasks:
+    #Remove old docker
+  - name: Remove old docker ubuntu
+    apt:
+      pkg:
+        - docker
+        - docker.oi
+        - docker-engine
+        - containerd
+        - runc
+      state: absent
+    become: yes
+    when: ansible_os_family == 'Debian'
+  
+  - name: Remove old docker centos
+    yum:
+      name:
+        - docker 
+        - docker-client 
+        - docker-client-latest
+        - docker-common
+        - docker-latest
+        - docker-latest-logrotate
+        - docker-logrotate
+        - docker-engine
+      state: absent
+    become: yes
+    when: ansible_os_family == 'RedHat'
+  
+  #Install dependes
+  - name: Install packages ubuntu
+    apt:
+      pkg:
+        - ca-certificates
+        - curl
+        - gnupg
+        - lsb-release
+      update_cache: yes
+    become: yes
+    when: ansible_os_family == 'Debian'
+  
+  - name: Install packages centos
+    yum:
+      name:
+        - yum-utils
+      state: latest
+    become: yes
+    when: ansible_os_family == 'RedHat'
+  
+  #Install docker from docker repo
+  - name: Create keyrings folder ubuntu
+    file:
+      path: '/etc/apt/keyrings'
+      state: directory
+    become: yes
+    when: ansible_os_family == 'Debian'
+
+  - name: Add apt key ubuntu
+    apt_key:
+      url: 'https://download.docker.com/linux/ubuntu/gpg'
+      state: present
+    become: yes
+    when: ansible_os_family == 'Debian'
+
+  - name: Add source list ubuntu
+    apt_repository:
+      repo: deb https://download.docker.com/linux/ubuntu focal stable
+      state: present
+    become: yes
+    when: ansible_os_family == 'Debian'
+  
+  - name: Add source list centos
+    yum_repository:
+      name: docker
+      description: docker repo
+      baseurl: https://download.docker.com/linux/centos/7/$basearch/stable
+      gpgcheck: no
+    become: yes
+    when: ansible_os_family == 'RedHat'
+
+  - name: Install docker ubuntu
+    apt:
+      pkg:
+        - docker-ce
+        - docker-ce-cli
+        - containerd.io
+        - docker-compose-plugin
+      update_cache: yes
+    become: yes
+    when: ansible_os_family == 'Debian'
+  
+  - name: Install docker centos
+    yum:
+      name:
+        - docker-ce
+        - docker-ce-cli
+        - containerd.io
+        - docker-compose-plugin
+      state: present
+      enablerepo: docker
+    become: yes
+    when: ansible_os_family == 'RedHat'
+
+  - name: Restart docker service
+    service:
+      name: docker
+      state: restarted
+    become: yes
+
+- hosts: database
+  gather_facts: yes
+  tasks:
+  - name: Install postgresql
+    apt:
+      pkg:
+        - 'postgresql-{{ psql_version }}'
+      update_cache: yes
+    become: yes
+
+  - name: Stop psql server
+    service:
+      name: postgresql
+      state: stopped
+    become: yes
+
+  - name: Make data dir
+    file:
+      path: '{{ data_dir }}'
+      state: directory
+      mode: '0755'
+    become: yes
+
+  - name: Set data dir
+    lineinfile:
+      path: '/etc/postgresql/{{ psql_version }}/main/postgresql.conf'
+      regexp: '^data_directory ='
+      line: 'data_directory = {{ data_dir }}'
+    become: yes
+
+  - name: Start psql server
+    service:
+      name: postgresql
+      state: started
+    become: yes

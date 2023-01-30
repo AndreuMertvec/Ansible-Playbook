@@ -1,0 +1,4 @@
+---
+- hosts: all
+  roles:
+    - role: 'roles/nginx-php_sf'

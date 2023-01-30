@@ -1,0 +1,7 @@
+---
+- name: Install php-fpm
+  apt:
+    pkg:
+      - php7.4-fpm
+    update_cache: yes
+  become: yes

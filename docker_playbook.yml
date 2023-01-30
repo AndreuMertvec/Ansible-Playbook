@@ -1,0 +1,75 @@
+---
+- hosts: localhost
+  gather_facts: yes
+  tasks:
+    #Remove old docker
+  - name: Remove old docker
+    apt:
+      pkg:
+        - docker
+        - docker.oi
+        - docker-engine
+        - containerd
+        - runc
+      state: absent
+    become: yes
+  
+  #Install dependes
+  - name: Install packages
+    apt:
+      pkg:
+        - ca-certificates
+        - curl
+        - gnupg
+        - lsb-release
+      update_cache: yes
+    become: yes
+  
+  #Install docker from docker repo
+  - name: Create keyrings folder
+    file:
+      path: '/etc/apt/keyrings'
+      state: directory
+    become: yes
+
+  - name: Add apt key
+    apt_key:
+      url: 'https://download.docker.com/linux/ubuntu/gpg'
+      state: present
+    become: yes
+
+  - name: Add source list
+    apt_repository:
+      repo: deb https://download.docker.com/linux/ubuntu focal stable
+      state: present
+    become: yes
+
+  - name: Install docker
+    apt:
+      pkg:
+        - docker-ce
+        - docker-ce-cli
+        - containerd.io
+        - docker-compose-plugin
+      update_cache: yes
+    become: yes
+
+  #Post install 
+  - name: Add docker config
+    copy:
+      src: 'daemon.json'
+      dest: '/etc/docker/daemon.json'
+    become: yes
+
+  - name: Add user to docker group
+    user:
+      name: '{{ ansible_user_id }}'
+      append: yes
+      groups: docker
+    become: yes
+
+  - name: Restart docker service
+    service:
+      name: docker
+      state: restarted
+    become: yes

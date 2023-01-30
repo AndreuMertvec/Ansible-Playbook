@@ -1,0 +1,29 @@
+---
+- hosts: all
+  tasks:
+  # Create group
+  - name: Create Groups
+    group:
+      name: superusers
+      state: present
+    become: yes
+
+  # Create users
+  - name: Create Users
+    user:
+      name: '{{ item }}'
+      shell: /bin/bash
+      state: present
+      groups: superusers
+    loop:
+      - user2
+      - user3   
+    become: yes
+
+  # Add group to sudoers
+  - name: Add group to sudoers
+    community.general.sudoers:
+      name: SuperUsers
+      group: superusers
+      commands: ALL
+    become: yes

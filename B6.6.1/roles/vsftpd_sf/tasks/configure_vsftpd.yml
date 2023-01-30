@@ -1,0 +1,21 @@
+---
+- name: Disable anonymous users
+  lineinfile:
+    path: /etc/vsftpd.conf
+    regexp: '^anonymous_enable='
+    line: anonymous_enable=NO
+  become: yes
+
+- name: Allow local user login
+  lineinfile:
+    path: /etc/vsftpd.conf
+    regexp: '^local_enable='
+    line: local_enable=YES
+  become: yes
+
+- name: Enable uploading
+  lineinfile:
+    path: /etc/vsftpd.conf
+    regexp: '^write_enable='
+    line: write_enable=YES
+  become: yes

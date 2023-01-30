@@ -1,0 +1,12 @@
+---
+# Variable configuration.
+- include_tasks: variables.yml
+
+# Install packages
+- include_tasks: install_packages.yml
+
+# Create document root
+- include_tasks: create_root.yml
+
+# Copy configs
+- include_tasks: copy_configs.yml

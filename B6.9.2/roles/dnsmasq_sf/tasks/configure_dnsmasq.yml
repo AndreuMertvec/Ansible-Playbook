@@ -1,0 +1,49 @@
+---
+- name: Set port
+  lineinfile:
+    path: {{ conf_file }}
+    regexp: '^port='
+    line: port=53
+  become: yes
+
+- name: Disable forward plain names
+  lineinfile:
+    path: {{ conf_file }}
+    regexp: '^domain-needed'
+    line: domain-needed
+  become: yes
+
+- name: Disable forward addresses in non-route spaces
+  lineinfile:
+    path: {{ conf_file }}
+    regexp: '^bogus-priv'
+    line: bogus-priv
+  become: yes
+
+- name: Enable dnsmasq to try each query with  each  server  strictly  in  the  order
+  lineinfile:
+    path: {{ conf_file }}
+    regexp: '^strict-order'
+    line: strict-order
+  become: yes
+
+- name: Enable automatically added to simple names in a hosts-file
+  lineinfile:
+    path: {{ conf_file }}
+    regexp: '^expand-hosts'
+    line: expand-hosts
+  become: yes
+
+- name: Set domain name
+  lineinfile:
+    path: {{ conf_file }}
+    regexp: '^domain='
+    line: domain=my-domain.com
+  become: yes
+
+- name: Set listen address
+  lineinfile:
+    path: {{ conf_file }}
+    regexp: '^listen-address='
+    line: listen-address=127.0.0.1
+  become: yes

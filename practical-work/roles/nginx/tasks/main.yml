@@ -1,0 +1,9 @@
+---
+# Variable configuration.
+- include_tasks: variables.yml
+
+# Install nginx
+- include_tasks: install_nginx.yml
+
+# Copy site
+- include_tasks: copy_site.yml
